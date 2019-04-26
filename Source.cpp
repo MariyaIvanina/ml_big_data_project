@@ -1,16 +1,14 @@
-#pragma warning(disable:4996)
-
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include <string>
 #include <set>
 #include <algorithm>
 #include "Eigen/Eigen"
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
-#include "getopt.h"
 
 using Mat = Eigen::MatrixXd;
 using Vec = Eigen::VectorXd;
@@ -36,6 +34,80 @@ void Factorize(const Mat& Y, const Arr& Omega, const std::set<int>& lags_set, in
 void Forecast(Mat& Y, const Arr& Omega, const std::set<int>& lags_set, int rank, int horizon, int T, double lambda_f, double lambda_w, double lambda_x, double eta,
   double epsilon_X, double epsilon_F, int max_iter_X, int max_iter_F, int max_global_iter, Mat& F, Mat& X, Mat& W);
 
+
+bool parse_config (int argc, char* argv[], char** input_file_name, char** output_file_name, char* delimeter, int* rank, int* horizon, int* T,
+  std::set<int>* lags_set, double* lambda_x, double* lambda_w, double* lambda_f, double* eta) {
+  if (argc != 2)
+    return false;
+  std::ifstream cfg;
+  cfg.open(argv[1]);
+  char* lags = new char[256];
+  char* par = new char[256];
+  char* val = new char[256];
+  while (cfg.getline(par, 255, ' ')) {
+    if (!strcmp("input_file", par))
+    {
+      cfg.getline(*input_file_name, 255, '\n');
+    }
+    else if (!strcmp("output_file", par))
+    {
+      cfg.getline(*output_file_name, 255, '\n');
+    }
+    else if (!strcmp("separator", par))
+    {
+      cfg.get(*delimeter);
+      cfg.get();
+    }
+    else if (!strcmp("k", par))
+    {
+      cfg.getline(val, 255, '\n');
+      *rank = atoi(val);
+    }
+    else if (!strcmp("lags", par))
+    {
+      cfg.getline(lags, 255, '\n');
+    }
+    else if (!strcmp("horizon", par))
+    {
+      cfg.getline(val, 255, '\n');
+      *horizon = atoi(val);
+    }
+    else if (!strcmp("T", par))
+    {
+      cfg.getline(val, 255, '\n');
+      *T = atoi(val);
+    }
+    else if (!strcmp("lambda_x", par))
+    {
+      cfg.getline(val, 255, '\n');
+      *lambda_x = atof(val);
+    }
+    else if (!strcmp("lambda_w", par))
+    {
+      cfg.getline(val, 255, '\n');
+      *lambda_w = atof(val);
+    }
+    else if (!strcmp("lambda_f", par))
+    {
+      cfg.getline(val, 255, '\n');
+      *lambda_f = atof(val);
+    }
+    else if (!strcmp("eta", par))
+    {
+      cfg.getline(val, 255, '\n');
+      *eta = atof(val);
+    }
+    else
+      return false;
+  }
+  std::string lags_string(lags);
+  std::istringstream iss(lags_string);
+  std::string lag;
+  while (std::getline(iss, lag, ',')) {
+    lags_set->insert(std::stoi(lag));
+  }
+  return true;
+}
 
 void ReadCSV(char* filename, char delimeter, Mat& Y, Arr& Omega) {
 
@@ -82,13 +154,20 @@ void Standardize(Mat& M, Vec* means, Vec* scales) {
 
 int main(int argc, char* argv[]) 
 {
-  char* input_file_name = "history/BTC-1ST/day/BTC-1ST_day_1.csv";
-  char* output_file_name = "test.txt";
+  char* input_file_name = new char [256];
+  char* output_file_name = new char [256];
 
-  char delimeter = ';';
+  char delimeter;
   int rank = 4, horizon = 3, T = -1;
   double lambda_x = 10000, lambda_w = 1000, lambda_f = 0.01, eta = 0.001;
   std::set<int> lags_set = { 1, 2, 3, 7 };
+
+  if (!parse_config(argc, argv, &input_file_name, &output_file_name, &delimeter, &rank, &horizon, &T,
+    &lags_set, &lambda_x, &lambda_w, &lambda_f, &eta))
+  {
+    std::cout << "Error during parsing config file!\n";
+    return 1;
+  }
 
   Mat Y;
   Arr Omega;
@@ -113,6 +192,11 @@ int main(int argc, char* argv[])
 
   std::ofstream output_file(output_file_name);
   output_file << Y_pred.format(CSVFormat);
+  output_file.close();
+
+  std::ofstream F_out_file("F.csv");
+  F_out_file << F.format(CSVFormat);
+  F_out_file.close();
   return 0;
 }
 
