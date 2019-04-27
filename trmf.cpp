@@ -122,7 +122,6 @@ void ReadCSV(char* filename, char delimeter, Mat& Y, Arr& Omega) {
   std::string line;
   int row = 0;
   while (std::getline(input_stream, line)) {
-	  std::cout<<"Reading...\n";
     Y.conservativeResize(row + 1, Y.cols());
     Omega.conservativeResize(row + 1, Y.cols());
 
