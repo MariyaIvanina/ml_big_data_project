@@ -32,10 +32,10 @@ def aggregate(data_dir, begin_date, end_date, columns):
     :param begin_date: Begin date in format 'yyyy.mm.dd'
     :param end_date: End date in format 'yyyy.mm.dd'
     :param columns: List of columns to fetch
-    :return: List of names for time series names and dataframe with their values.
-            List is named index for columns in dataframe and dates is index for rows.
+    :return: List of time series names and dataframe with time series values.
+            Each name corresponds to appropriate column in dataframe. Dataframe has dates as index.
     """
-    time_series_index = []
+    time_series_names = []
     time_series_df = None
 
     folders = os.listdir(data_dir)
@@ -59,27 +59,37 @@ def aggregate(data_dir, begin_date, end_date, columns):
         series_names = ['{}:{}'.format(currency, colname) for colname in data.columns]
         data.columns = series_names
 
-        time_series_index.extend(series_names)
+        time_series_names.extend(series_names)
 
         time_series_df = data if i == 0 else pd.merge(time_series_df, data,
                                                       how='outer', left_index=True, right_index=True)
 
-    return time_series_index, time_series_df
+    return time_series_names, time_series_df
+
+
+def save_aggregated(time_series_names, time_series_df, output_filename):
+    """
+    Saves aggreagated time series names, values and dates to separate files with.
+    :param time_series_names: names for time series
+    :param time_series_df: Time series dataframe.
+    :param output_filename: Common name for output files.
+    """
+    ts_names_filename = output_filename + '_names.csv'
+    pd.Series(time_series_names).to_csv(ts_names_filename, index=False)
+
+    ts_values_filename = output_filename + '_values.csv'
+    time_series_df.T.to_csv(ts_values_filename, na_rep='n', header=False, index=False)
+
+    ts_dates_filename = output_filename + '_dates.csv'
+    time_series_df.index.to_series().to_csv(ts_dates_filename)
 
 
 def _main(args):
     begin_date = datetime.datetime.strptime(args.begin_date, '%d.%m.%Y')
     end_date = datetime.datetime.strptime(args.end_date, '%d.%m.%Y')
-    index, time_series = aggregate(args.data_dir, begin_date, end_date, args.columns.split(','))
 
-    index_filename = args.output_filename + '_index.csv'
-    pd.Series(index).to_csv(index_filename, index=False)
-
-    series_filename = args.output_filename + '_series.csv'
-    time_series.T.to_csv(series_filename, na_rep='n', header=False, index=False)
-
-    dates_filename = args.output_filename + '_dates.csv'
-    time_series.index.to_series().to_csv(dates_filename)
+    ts_names, ts_values_df = aggregate(args.data_dir, begin_date, end_date, args.columns.split(','))
+    save_aggregated(ts_names, ts_values_df, args.output_filename)
 
 
 if __name__ == '__main__':
