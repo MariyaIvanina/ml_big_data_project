@@ -37,65 +37,77 @@ void Forecast(Mat& Y, const Arr& Omega, const std::set<int>& lags_set, int rank,
 
 bool parse_config (int argc, char* argv[], char** input_file_name, char** output_file_name, char* delimeter, int* rank, int* horizon, int* T,
   std::set<int>* lags_set, double* lambda_x, double* lambda_w, double* lambda_f, double* eta) {
-  if (argc != 2)
+  if (argc < 2)
     return false;
-  std::ifstream cfg;
-  cfg.open(argv[1]);
   char* lags = new char[256];
-  char* par = new char[256];
-  char* val = new char[256];
-  while (cfg.getline(par, 255, ' ')) {
-    if (!strcmp("input_file", par))
+  int idx = 1;
+  while (idx < argc) {
+	 std::cout<<argv[idx]<<std::endl;
+    if (!strcmp("input_file", argv[idx]))
     {
-      cfg.getline(*input_file_name, 255, '\n');
+      strcpy(*input_file_name, argv[++idx]);
+	  idx++;
+	  //std::cout<<*input_file_name<<std::endl;
     }
-    else if (!strcmp("output_file", par))
+    else if (!strcmp("output_file", argv[idx]))
     {
-      cfg.getline(*output_file_name, 255, '\n');
+      strcpy(*output_file_name, argv[++idx]);
+	  idx++;
+	  //std::cout<<*output_file_name<<std::endl;
     }
-    else if (!strcmp("separator", par))
+    else if (!strcmp("separator", argv[idx]))
     {
-      cfg.get(*delimeter);
-      cfg.get();
+      *delimeter = argv[++idx][0];
+	  idx++;
+	  //std::cout<<*delimeter<<std::endl;
     }
-    else if (!strcmp("k", par))
+    else if (!strcmp("k", argv[idx]))
     {
-      cfg.getline(val, 255, '\n');
-      *rank = atoi(val);
+      *rank = atoi(argv[++idx]);
+	  idx++;
+	  //std::cout<<val<<std::endl;
     }
-    else if (!strcmp("lags", par))
+    else if (!strcmp("lags", argv[idx]))
     {
-      cfg.getline(lags, 255, '\n');
+      strcpy(lags, argv[++idx]);
+	  idx++;
+	  //std::cout<<lags<<std::endl;
     }
-    else if (!strcmp("horizon", par))
+    else if (!strcmp("horizon", argv[idx]))
     {
-      cfg.getline(val, 255, '\n');
-      *horizon = atoi(val);
+      *horizon = atoi(argv[++idx]);
+	  idx++;
+	  //std::cout<<val<<std::endl;
     }
-    else if (!strcmp("T", par))
+    else if (!strcmp("T", argv[idx]))
     {
-      cfg.getline(val, 255, '\n');
-      *T = atoi(val);
+      *T = atoi(argv[++idx]);
+	  idx++;
+	  //std::cout<<val<<std::endl;
     }
-    else if (!strcmp("lambda_x", par))
+    else if (!strcmp("lambda_x", argv[idx]))
     {
-      cfg.getline(val, 255, '\n');
-      *lambda_x = atof(val);
+      *lambda_x = atof(argv[++idx]);
+	  idx++;
+	  //std::cout<<val<<std::endl;
     }
-    else if (!strcmp("lambda_w", par))
+    else if (!strcmp("lambda_w", argv[idx]))
     {
-      cfg.getline(val, 255, '\n');
-      *lambda_w = atof(val);
+      *lambda_w = atof(argv[++idx]);
+	  idx++;
+	  //std::cout<<val<<std::endl;
     }
-    else if (!strcmp("lambda_f", par))
+    else if (!strcmp("lambda_f", argv[idx]))
     {
-      cfg.getline(val, 255, '\n');
-      *lambda_f = atof(val);
+      *lambda_f = atof(argv[++idx]);
+	  idx++;
+	  //std::cout<<val<<std::endl;
     }
-    else if (!strcmp("eta", par))
+    else if (!strcmp("eta", argv[idx]))
     {
-      cfg.getline(val, 255, '\n');
-      *eta = atof(val);
+      *eta = atof(argv[++idx]);
+	  idx++;
+	  //std::cout<<val<<std::endl;
     }
     else
       return false;
@@ -115,10 +127,13 @@ void ReadCSV(char* filename, char delimeter, Mat& Y, Arr& Omega) {
   Omega.conservativeResize(0, 0);
   std::ifstream input_stream;
   input_stream.open(filename);
-
+  if (!input_stream.is_open())
+	  std::cout<<"Didn't open!\n";
+  std::cout<<filename<<std::endl;
   std::string line;
   int row = 0;
   while (std::getline(input_stream, line)) {
+	  std::cout<<"Reading...\n";
     Y.conservativeResize(row + 1, Y.cols());
     Omega.conservativeResize(row + 1, Y.cols());
 
@@ -155,12 +170,14 @@ void Standardize(Mat& M, Vec* means, Vec* scales) {
 int main(int argc, char* argv[]) 
 {
   char* input_file_name = new char [256];
+  //char* input_file_name = "converted.csv";
   char* output_file_name = new char [256];
+  //char* output_file_name = "test.txt";
 
-  char delimeter;
-  int rank = 4, horizon = 3, T = -1;
+  char delimeter = ',';
+  int rank = 32, horizon = 25, T = -1;
   double lambda_x = 10000, lambda_w = 1000, lambda_f = 0.01, eta = 0.001;
-  std::set<int> lags_set = { 1, 2, 3, 7 };
+  std::set<int> lags_set = { 1, 2, 3, 4, 5, 6, 7 , 14, 21};
 
   if (!parse_config(argc, argv, &input_file_name, &output_file_name, &delimeter, &rank, &horizon, &T,
     &lags_set, &lambda_x, &lambda_w, &lambda_f, &eta))
@@ -175,7 +192,7 @@ int main(int argc, char* argv[])
 
   int n = Y.rows();
   if (T == -1) T = Y.cols();
-
+  std::cout<<n<<"\t"<<T<<std::endl;
   double epsilon_X = 0.0001;
   double epsilon_F = 0.0001;
   int max_iter_X = 10;
@@ -197,6 +214,7 @@ int main(int argc, char* argv[])
   std::ofstream F_out_file("F.csv");
   F_out_file << F.format(CSVFormat);
   F_out_file.close();
+  std::cout<<"Thank God, it's done!\n";
   return 0;
 }
 
