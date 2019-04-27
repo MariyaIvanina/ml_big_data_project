@@ -2,6 +2,7 @@ history/*
 
 # CMake
 cmake-build-*/
+CMakeLists.txt
 
 # IntelliJ
 .idea/*
@@ -18,3 +19,4 @@ out/
 ### JupyterNotebook ###
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
+__pycache__
