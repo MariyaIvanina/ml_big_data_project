@@ -19,6 +19,6 @@ For comparison with TRMF various autoregression algorithms were implemented, whe
 
 ## Usage
 
-Build this program with: g++ -std=c++11 -O3 Source.cpp -o trmf
+Build this program with: g++ -std=c++11 -O3 trmf.cpp -o trmf
 
-Example run: ./trmf input_file converted.csv output_file test.txt separator , k 32 horizon 25 T -1 lambda_x 10000 lambda_w 1000 lambda_f 0.01 eta 0.001 lags 1,2,3,4,5,6,7,14,21
+Example run: ./trmf --input_file converted.csv --output_file test.txt --separator , --k 32 --horizon 25 --T -1 --lambda_x 10000 --lambda_w 1000 --lambda_f 0.01 --eta 0.001 --lags 1,2,3,4,5,6,7,14,21
