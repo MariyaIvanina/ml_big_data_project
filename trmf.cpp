@@ -172,7 +172,6 @@ int main(int argc, char* argv[])
   char* output_file_name = new char[256];
   //char* output_file_name = "test.txt";
   char* output_f_file_name = new char[256];
-  output_f_file_name = "F.csv";
 
   char delimeter = ',';
   int rank = 32, horizon = 25, T = -1;

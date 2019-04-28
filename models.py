@@ -32,20 +32,23 @@ class TRMF:
             input_file,
             forecast=True,
             horizon=20,
-            output_file='predicted_values.csv'):
+            output_file='predicted_values.csv',
+            output_f_file='F.csv'):
         """
         Applies factorization and forecasts rate for aggregated values from 'input_file'.
         :param input_file: File with input values for TRMF algorithm. In fact it is Y matrix.
         :param forecast: Flag determining whether to make a prediction.
         :param horizon: Days amount to predict. Set to 0 if 'forecast' is False.
         :param output_file: File path for predictions.
+        :param output_f_file: File path for F matrix.
         :return:
         """
         if not forecast:
             horizon = 0
 
-        call_str = f"./trmf --input_file {input_file} --output_file {output_file} --horizon {horizon}" \
-            f" --k {self.rank} --lags {','.join(self.lags)} --lambda_x {self.lambda_x}" \
+        lags_str = ','.join(str(x) for x in self.lags)
+        call_str = f"./trmf --input_file {input_file} --output_file {output_file} --output_f_file {output_f_file}" \
+            f" --horizon {horizon} --k {self.rank} --lags {lags_str} --lambda_x {self.lambda_x}" \
             f" --lambda_w {self.lambda_w} --lambda_f {self.lambda_f} --eta {self.eta}"
 
         subprocess.call(call_str.split())
@@ -103,7 +106,7 @@ class SvdAutoRegressionModel():
     """ Forecasting with SVD AR model for each timeseries with lags """
     def __init__(self, lags):
         self.lags = lags
-    
+
     def fit(self, train):
         u, s, vh = np.linalg.svd(train, full_matrices=False)
         self.F = u*s

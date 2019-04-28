@@ -36,7 +36,7 @@ def _main(args):
     save_aggregated(currency_names, currency_values_df, input_data_name)
 
     print("Compiling library sources ...")
-    #TRMF.compile_sources()
+    TRMF.compile_sources()
 
     print("Running TRMF ...")
     model = TRMF(args.rank, args.lags.split(','), args.lambda_x, args.lambda_w, args.lambda_f, args.eta)
