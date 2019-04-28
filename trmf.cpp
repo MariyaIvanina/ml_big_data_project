@@ -42,7 +42,6 @@ bool parse_config (int argc, char* argv[], char** input_file_name, char** output
   char* lags = new char[256];
   int idx = 1;
   while (idx < argc) {
-	 std::cout<<argv[idx]<<std::endl;
     if (!strcmp("--input_file", argv[idx]))
     {
       strcpy(*input_file_name, argv[++idx]);
@@ -116,9 +115,6 @@ void ReadCSV(char* filename, char delimeter, Mat& Y, Arr& Omega) {
   Omega.conservativeResize(0, 0);
   std::ifstream input_stream;
   input_stream.open(filename);
-  if (!input_stream.is_open())
-	  std::cout<<"Didn't open!\n";
-  std::cout<<filename<<std::endl;
   std::string line;
   int row = 0;
   while (std::getline(input_stream, line)) {
@@ -180,7 +176,6 @@ int main(int argc, char* argv[])
 
   int n = Y.rows();
   if (T == -1) T = Y.cols();
-  std::cout<<n<<"\t"<<T<<std::endl;
   double epsilon_X = 0.0001;
   double epsilon_F = 0.0001;
   int max_iter_X = 10;
