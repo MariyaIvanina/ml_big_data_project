@@ -96,7 +96,7 @@ def RollingCV(model, data, T_train, T_test, T_step, metric='ND', normalize=True)
 
             input_file = 'rolling_cv_input.csv'
             output_file = 'rolling_cv_output.csv'
-            pd.DataFrame(data).to_csv(input_file, na_rep='n', header=False, index=False)
+            pd.DataFrame(train).to_csv(input_file, na_rep='n', header=False, index=False)
 
             model.fit(input_file, horizon=T_test, output_file=output_file)
             test_preds = pd.read_csv(output_file, sep=',', header=None).values
