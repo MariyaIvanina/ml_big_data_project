@@ -17,7 +17,8 @@ def _parse_args():
     parser.add_argument('--horizon', default=0, help="Days amount to predict")
     parser.add_argument('--columns', default='O,C,H,L', help="List of columns to fetch, separated by ','")
     parser.add_argument('--rank', default=32, help="Factorization rank")
-    parser.add_argument('--lags', default='1,2,3,4,5,6,7,14,21', help="List of lags to use in algorithm, separated by comma")
+    parser.add_argument('--lags', default='1,2,3,4,5,6,7,14,21',
+                        help="List of lags to use in algorithm, separated by comma")
     parser.add_argument('--lambda_x', default=1000, help="Regularization coefficient for inconsistent with"
                                                          " autoregression model rows in X matrix")
     parser.add_argument('--lambda_w', default=1000, help="Regularization coefficient for large autoregression"

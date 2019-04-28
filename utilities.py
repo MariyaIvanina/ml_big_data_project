@@ -10,11 +10,13 @@ def ND(prediction, Y, mask=None):
     Y[mask == 0] = 0.
     return abs((prediction - Y) * mask).sum() / abs(Y).sum()
 
+
 def NRMSE(prediction, Y, mask=None):
     if mask is None:
         mask = np.array((~np.isnan(Y)).astype(int))
     Y[mask == 0] = 0.
     return pow((pow(prediction - Y, 2) * mask).sum(), 0.5) / abs(Y).sum() * pow(mask.sum(), 0.5)
+
 
 def interpolate_data(data):
     data_interpolated = data.copy()
@@ -57,6 +59,7 @@ def interpolate_data(data):
     data_interpolated[np.isnan(data_interpolated)] = 0.
     return data_interpolated
 
+
 def get_slice(data, T_train, T_test, T_start, normalize=True):
     N = len(data)
     # split on train and test
@@ -83,6 +86,7 @@ def get_slice(data, T_train, T_test, T_start, normalize=True):
         test /= std_train.repeat(T_test).reshape(N, T_test)
     
     return train, test
+
 
 def RollingCV(model, data, T_train, T_test, T_step, metric='ND', normalize=True):
     scores = np.array([])

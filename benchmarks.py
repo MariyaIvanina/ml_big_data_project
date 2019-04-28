@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 
-from aggregate import aggregate, save_aggregated
+from aggregate import aggregate
 
 from models import TRMF
 from models import IndependentFeaturesAutoRegressionModel
@@ -10,9 +10,10 @@ from models import SvdAutoRegressionModel
 import utilities
 import numpy as np
 
+
 def _parse_args():
-    parser = argparse.ArgumentParser(prog='Calculating benchmarks with AutoRegression(independent feature and all together)'
-                                          ' SVD Autoregression and TRMF.'
+    parser = argparse.ArgumentParser(prog='Calculating benchmarks with AutoRegression'
+                                          ' (independent feature and all together) SVD Autoregression and TRMF.'
                                           ' Takes date range for training and days amount for prediction.')
     parser.add_argument('--data_dir', help='Path to directory with cryptocurrency data')
     parser.add_argument('--begin_date', help="Begin date for training in format 'dd.mm.yyyy'")
@@ -55,6 +56,7 @@ def _main(args):
     apply_benchmark_model(data_interpolated, IndependentFeaturesAutoRegressionModel)
     apply_benchmark_model(data_interpolated, AutoRegressionModel)
     apply_benchmark_model(data_interpolated, SvdAutoRegressionModel)
+
 
 if __name__ == '__main__':
     _main(_parse_args())

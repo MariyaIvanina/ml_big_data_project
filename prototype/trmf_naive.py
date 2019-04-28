@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class TRMF:
+class TRMFNaive:
     """Simple basic implementation of Temporal Regularized Matrix Factorization.
     Parameters
     ----------
