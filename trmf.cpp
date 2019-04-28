@@ -1,3 +1,5 @@
+//#define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -34,68 +36,70 @@ void Factorize(const Mat& Y, const Arr& Omega, const std::set<int>& lags_set, in
 void Forecast(Mat& Y, const Arr& Omega, const std::set<int>& lags_set, int rank, int horizon, int T, double lambda_f, double lambda_w, double lambda_x, double eta,
   double epsilon_X, double epsilon_F, int max_iter_X, int max_iter_F, int max_global_iter, Mat& F, Mat& X, Mat& W);
 
+void FindLambdas(const char* input_file_name, const char separator);
+void MatchByColumn(const Vec& ref, Mat &Y, int col);
 
-bool parse_config (int argc, char* argv[], char** input_file_name, char** output_file_name, char* delimeter, int* rank, int* horizon, int* T,
+bool parse_config(int argc, char* argv[], char** input_file_name, char** output_file_name, char* delimeter, int* rank, int* horizon, int* T,
   std::set<int>* lags_set, double* lambda_x, double* lambda_w, double* lambda_f, double* eta) {
   if (argc < 2)
     return false;
   char* lags = new char[256];
   int idx = 1;
   while (idx < argc) {
-    if (!strcmp("--input_file", argv[idx]))
+    if (!strcmp("input_file", argv[idx]))
     {
       strcpy(*input_file_name, argv[++idx]);
-	  idx++;
+      idx++;
     }
-    else if (!strcmp("--output_file", argv[idx]))
+    else if (!strcmp("output_file", argv[idx]))
     {
       strcpy(*output_file_name, argv[++idx]);
-	  idx++;
+      idx++;
     }
-    else if (!strcmp("--separator", argv[idx]))
+    else if (!strcmp("separator", argv[idx]))
     {
       *delimeter = argv[++idx][0];
-	  idx++;
+      idx++;
     }
-    else if (!strcmp("--k", argv[idx]))
+    else if (!strcmp("k", argv[idx]))
     {
       *rank = atoi(argv[++idx]);
-	  idx++;
+      idx++;
     }
-    else if (!strcmp("--lags", argv[idx]))
+    else if (!strcmp("lags", argv[idx]))
     {
       strcpy(lags, argv[++idx]);
-	  idx++;
+      idx++;
     }
-    else if (!strcmp("--horizon", argv[idx]))
+    else if (!strcmp("horizon", argv[idx]))
     {
       *horizon = atoi(argv[++idx]);
-	  idx++;
+      idx++;
     }
-    else if (!strcmp("--T", argv[idx]))
+    else if (!strcmp("T", argv[idx]))
     {
       *T = atoi(argv[++idx]);
-	  idx++;
+      idx++;
     }
-    else if (!strcmp("--lambda_x", argv[idx]))
+    else if (!strcmp("lambda_x", argv[idx]))
     {
       *lambda_x = atof(argv[++idx]);
-	  idx++;
+      idx++;
     }
-    else if (!strcmp("--lambda_w", argv[idx]))
+    else if (!strcmp("lambda_w", argv[idx]))
     {
       *lambda_w = atof(argv[++idx]);
-	  idx++;
+      idx++;
     }
-    else if (!strcmp("--lambda_f", argv[idx]))
+    else if (!strcmp("lambda_f", argv[idx]))
     {
       *lambda_f = atof(argv[++idx]);
-	  idx++;
+      idx++;
     }
-    else if (!strcmp("--eta", argv[idx]))
+    else if (!strcmp("eta", argv[idx]))
     {
       *eta = atof(argv[++idx]);
-	  idx++;
+      idx++;
     }
     else
       return false;
@@ -109,7 +113,7 @@ bool parse_config (int argc, char* argv[], char** input_file_name, char** output
   return true;
 }
 
-void ReadCSV(char* filename, char delimeter, Mat& Y, Arr& Omega) {
+void ReadCSV(const char* filename, const char delimeter, Mat& Y, Arr& Omega) {
 
   Y.conservativeResize(0, 0);
   Omega.conservativeResize(0, 0);
@@ -151,17 +155,22 @@ void Standardize(Mat& M, Vec* means, Vec* scales) {
   M = M.array().colwise() / scales->array();
 }
 
-int main(int argc, char* argv[]) 
+void Destandardize(const Vec& means, const Vec& scales, Mat& M) {
+  M = M.array().colwise() * scales.array();
+  M = M.colwise() + means;
+}
+
+int main(int argc, char* argv[])
 {
-  char* input_file_name = new char [256];
+  char* input_file_name = new char[256];
   //char* input_file_name = "converted.csv";
-  char* output_file_name = new char [256];
+  char* output_file_name = new char[256];
   //char* output_file_name = "test.txt";
 
   char delimeter = ',';
   int rank = 32, horizon = 25, T = -1;
   double lambda_x = 10000, lambda_w = 1000, lambda_f = 0.01, eta = 0.001;
-  std::set<int> lags_set = { 1, 2, 3, 4, 5, 6, 7 , 14, 21};
+  std::set<int> lags_set = { 1, 2, 3, 4, 5, 6, 7 , 14, 21 };
 
   if (!parse_config(argc, argv, &input_file_name, &output_file_name, &delimeter, &rank, &horizon, &T,
     &lags_set, &lambda_x, &lambda_w, &lambda_f, &eta))
@@ -169,6 +178,9 @@ int main(int argc, char* argv[])
     std::cout << "Error during parsing config file!\n";
     return 1;
   }
+
+  //FindLambdas(input_file_name, delimeter);
+  //std::cin >> delimeter;
 
   Mat Y;
   Arr Omega;
@@ -189,6 +201,7 @@ int main(int argc, char* argv[])
   Mat W(rank, lags_set.size());
   Forecast(Y_pred, Omega_part, lags_set, rank, horizon, T, lambda_f, lambda_w, lambda_x, eta, epsilon_X, epsilon_F,
     max_iter_X, max_iter_F, max_global_iter, F, X, W);
+
   if (horizon != 0)
   {
     std::ofstream output_file(output_file_name);
@@ -199,7 +212,6 @@ int main(int argc, char* argv[])
   std::ofstream F_out_file("F.csv");
   F_out_file << F.format(CSVFormat);
   F_out_file.close();
-  std::cout<<"Thank God, it's done!\n";
   return 0;
 }
 
@@ -221,12 +233,13 @@ void Forecast(Mat& Y, const Arr& Omega, const std::set<int>& lags_set, int rank,
 
   std::vector<int> lags_vec(lags_set.begin(), lags_set.end());
   std::sort(lags_vec.begin(), lags_vec.end());
+
   if (horizon != 0)
   {
-    for (int row = 0; row<rank; ++row) {
-      for (int t = T; t<T + horizon; ++t) {
+    for (int row = 0; row < rank; ++row) {
+      for (int t = T; t < T + horizon; ++t) {
         double value = 0;
-        for (int lag_idx = 0; lag_idx<lags_vec.size(); ++lag_idx) {
+        for (int lag_idx = 0; lag_idx < lags_vec.size(); ++lag_idx) {
           value += X(row, t - lags_vec[lag_idx]) * W(row, lag_idx);
         }
         X(row, t) = value;
@@ -234,12 +247,14 @@ void Forecast(Mat& Y, const Arr& Omega, const std::set<int>& lags_set, int rank,
     }
     Mat X_pred = X.rightCols(horizon + 1);
     Mat Y_pred = F * X_pred;
+    MatchByColumn(reference_column, Y_pred, 0);
     Y = Y_pred.rightCols(horizon);
   }
+  Destandardize(means, scales, Y);
 }
 
 void Factorize(const Mat& Y, const Arr& Omega, const std::set<int>& lags_set, int rank, double lambda_f, double lambda_w, double lambda_x, double eta,
-  double epsilon_X, double epsilon_F, int max_iter_X, int max_iter_F, int max_global_iter, Mat& F, Mat& X, Mat& W) 
+  double epsilon_X, double epsilon_F, int max_iter_X, int max_iter_F, int max_global_iter, Mat& F, Mat& X, Mat& W)
 {
 
   std::vector<int> lags_vec(lags_set.begin(), lags_set.end());
@@ -265,8 +280,13 @@ void Factorize(const Mat& Y, const Arr& Omega, const std::set<int>& lags_set, in
   }
 }
 
+void MatchByColumn(const Vec& ref, Mat &Y, int col) {
+  Vec col_values = Y.col(col);
+  Y = (Y.colwise() + ref).colwise() - col_values;
+}
 
-Vec CholetskyRidge(const Mat& A, const Vec& y, double alpha) 
+
+Vec CholetskyRidge(const Mat& A, const Vec& y, double alpha)
 {
   Eigen::LDLT<Mat> ldlt;
   Mat I(A.cols(), A.cols());
@@ -278,7 +298,7 @@ Vec CholetskyRidge(const Mat& A, const Vec& y, double alpha)
 
 
 // Coordinate descent from http://www.cs.utexas.edu/~cjhsieh/icdm-pmf.pdf
-void FStep(const Mat& Y, const Mat& X, const Arr& Omega, double lambda, double epsilon_F, int max_iter_F, Mat& F) 
+void FStep(const Mat& Y, const Mat& X, const Arr& Omega, double lambda, double epsilon_F, int max_iter_F, Mat& F)
 {
   Mat R = Y - F * X;
   for (int i = 0; i < max_iter_F; ++i) {
@@ -300,7 +320,7 @@ void FStep(const Mat& Y, const Mat& X, const Arr& Omega, double lambda, double e
 }
 
 // Conjugate gradient method taken from https://en.wikipedia.org/wiki/Conjugate_gradient_method#The_resulting_algorithm
-void ConjugateGradient(const Mat& A, const Vec& b, int row, double epsilon_cg, Mat& X) 
+void ConjugateGradient(const Mat& A, const Vec& b, int row, double epsilon_cg, Mat& X)
 {
   Vec r0 = b - A * X.row(row).transpose();
   Vec r1 = r0;
@@ -319,7 +339,7 @@ void ConjugateGradient(const Mat& A, const Vec& b, int row, double epsilon_cg, M
   return;
 }
 
-void WStep(const Mat& X, std::vector<int> lags, double lambda_w, double lambda_x, Mat& W) 
+void WStep(const Mat& X, std::vector<int> lags, double lambda_w, double lambda_x, Mat& W)
 {
   std::sort(lags.begin(), lags.end());
   int T = X.cols();
@@ -342,7 +362,7 @@ void WStep(const Mat& X, std::vector<int> lags, double lambda_w, double lambda_x
 }
 
 
-std::set<int> GetDeltaSet(const std::set<int>& lags, int d) 
+std::set<int> GetDeltaSet(const std::set<int>& lags, int d)
 {
   std::set<int> deltaset;
   int lag = 0;
@@ -361,7 +381,7 @@ std::set<int> GetDeltaSet(const std::set<int>& lags, int d)
 }
 
 
-std::set<int> GetAllNotEmptyDelta(const std::set<int>& lags) 
+std::set<int> GetAllNotEmptyDelta(const std::set<int>& lags)
 {
   std::set<int> deltas;
   int delta = 0;
@@ -388,7 +408,7 @@ std::set<int> GetAllNotEmptyDelta(const std::set<int>& lags)
 }
 
 
-void ModifyG(const Mat& W, const std::set<int>& lags, int W_idx, Mat& G) 
+void ModifyG(const Mat& W, const std::set<int>& lags, int W_idx, Mat& G)
 {
   double w_0 = -1;
   int T = G.cols();
@@ -425,7 +445,7 @@ void ModifyG(const Mat& W, const std::set<int>& lags, int W_idx, Mat& G)
   }
 }
 
-void ModifyD(const Mat& W, const std::set<int>& lags, int W_idx, Mat& D) 
+void ModifyD(const Mat& W, const std::set<int>& lags, int W_idx, Mat& D)
 {
   double w_0 = -1;
   int T = D.cols();
@@ -457,13 +477,13 @@ void ModifyD(const Mat& W, const std::set<int>& lags, int W_idx, Mat& D)
   }
 }
 
-void ToLaplacian(Mat& G) 
+void ToLaplacian(Mat& G)
 {
   G *= -1;
   G -= G.colwise().sum().asDiagonal();
 }
 
-Mat GetFullW(const Mat& W, const std::set<int> lags_set) 
+Mat GetFullW(const Mat& W, const std::set<int> lags_set)
 {
   std::vector<int> lags_vec(lags_set.begin(), lags_set.end());
   std::sort(lags_vec.begin(), lags_vec.end());
@@ -478,7 +498,7 @@ Mat GetFullW(const Mat& W, const std::set<int> lags_set)
 
 
 void XStep(const Mat& Y, const Arr& Omega, const Mat& W, const Mat& F, const std::set<int> lags_set,
-  double lambda_x, double eta, double epsilon_X, int max_iter_X, Mat& X) 
+  double lambda_x, double eta, double epsilon_X, int max_iter_X, Mat& X)
 {
   Mat W_full = GetFullW(W, lags_set);
 
@@ -524,4 +544,86 @@ void XStep(const Mat& Y, const Arr& Omega, const Mat& W, const Mat& F, const std
       break;
     }
   }
+}
+
+
+void FindLambdas(const char* input_file_name, const char separator) 
+{
+  Mat Y_orig;
+  Arr Omega;
+  ReadCSV(input_file_name, ',', Y_orig, Omega);
+  std::cout << std::endl << Y_orig.rows() << " " << Y_orig.cols() << std::endl;
+  Mat Y = Y_orig.leftCols(380);
+
+  int n = Y.rows();
+  int T = Y.cols();
+
+  std::set<int> lags_set = { 1,2,3,4,5,6,7,14,21 };
+
+  int k = 32;
+  //std::cout << std::endl << "input rank: ";
+  //std::cin >> k;
+
+  int horizon = 20;
+  //std::cout << std::endl << "input horizon: ";
+  //std::cin >> horizon;
+
+  double p_missing = 0.2;
+  //std::cout << std::endl << "input prob of missing, 0<p<1: ";
+  //std::cin >> p_missing;
+
+  Mat F_low(n, k);
+  Mat X_low(k, T - horizon);
+  Mat W_low(k, lags_set.size());
+  F_low.setRandom();
+  X_low.setRandom();
+  W_low.setRandom();
+
+  std::vector<double> lambda_x_set = { 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000, 100000 };
+  std::vector<double> lambda_w_set = { 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000 };
+  std::vector<double> lambda_f_set = { 0.0001, 0.001, 0.01, 0.1, 1 };
+  std::vector<double> eta_set = { 0.0001, 0.001, 0.01, 0.1, 1 };
+
+  double epsilon_X = 0.0001;
+  double epsilon_F = 0.0001;
+  int max_iter_X = 20;
+  int max_iter_F = 10;
+  int max_global_iter = 10;
+  bool sparse = false;
+  bool keep_big = false;
+  bool match = true;
+  double min_rmse = 10000000;
+  std::cout << std::endl;
+  int counter = 1;
+
+  double x_v=0., w_v=0., f_v=0., e=0.;
+
+  for (auto lambda_x : lambda_x_set) {
+    for (auto lambda_w : lambda_w_set) {
+      for (auto lambda_f : lambda_f_set) {
+        for (auto eta : eta_set) {
+          
+          Mat Y = Y_orig.leftCols(380);
+          Vec means, scales;
+          Standardize(Y, &means, &scales);
+          Mat Y_block = Y.leftCols(Y.cols() - horizon);
+          Arr Omega_block = Omega.leftCols(Y.cols() - horizon);
+          Forecast(Y_block, Omega_block, lags_set, k, horizon, T, lambda_f, lambda_w, lambda_x, eta, epsilon_X, epsilon_F,
+            max_iter_X, max_iter_F, max_global_iter, F_low, X_low, W_low);
+          double rmse = ((Y_block.rightCols(horizon) - Y.rightCols(horizon)).array() * (Y_block.rightCols(horizon) - Y.rightCols(horizon)).array()).mean();
+          std::cout << rmse << std::endl << std::flush;
+          if (rmse<min_rmse) {
+            min_rmse = rmse;
+            x_v = lambda_x;
+            w_v = lambda_w;
+            f_v = lambda_f;
+            e = eta;
+            std::cout << std::endl << "lambda_x: " << lambda_x << ";\t lambda_w: " << lambda_w << ";\t lambda_f: " << lambda_f << "; eta: " << eta << ";\t rmse:" << rmse;
+          }
+        }
+      }
+    }
+  }
+  std::cout << std::endl << "lambda_x: " << x_v << ";\t lambda_w: " << w_v << ";\t lambda_f: " << f_v << "; eta: " << e << ";\t rmse:" << min_rmse;
+  std::cout << std::endl;
 }
