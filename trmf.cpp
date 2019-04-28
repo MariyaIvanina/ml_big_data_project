@@ -194,10 +194,12 @@ int main(int argc, char* argv[])
   Mat W(rank, lags_set.size());
   Forecast(Y_pred, Omega_part, lags_set, rank, horizon, T, lambda_f, lambda_w, lambda_x, eta, epsilon_X, epsilon_F,
     max_iter_X, max_iter_F, max_global_iter, F, X, W);
-
-  std::ofstream output_file(output_file_name);
-  output_file << Y_pred.format(CSVFormat);
-  output_file.close();
+  if (horizon != 0)
+  {
+    std::ofstream output_file(output_file_name);
+    output_file << Y_pred.format(CSVFormat);
+    output_file.close();
+  }
 
   std::ofstream F_out_file("F.csv");
   F_out_file << F.format(CSVFormat);
@@ -224,19 +226,21 @@ void Forecast(Mat& Y, const Arr& Omega, const std::set<int>& lags_set, int rank,
 
   std::vector<int> lags_vec(lags_set.begin(), lags_set.end());
   std::sort(lags_vec.begin(), lags_vec.end());
-
-  for (int row = 0; row<rank; ++row) {
-    for (int t = T; t<T + horizon; ++t) {
-      double value = 0;
-      for (int lag_idx = 0; lag_idx<lags_vec.size(); ++lag_idx) {
-        value += X(row, t - lags_vec[lag_idx]) * W(row, lag_idx);
+  if (horizon != 0)
+  {
+    for (int row = 0; row<rank; ++row) {
+      for (int t = T; t<T + horizon; ++t) {
+        double value = 0;
+        for (int lag_idx = 0; lag_idx<lags_vec.size(); ++lag_idx) {
+          value += X(row, t - lags_vec[lag_idx]) * W(row, lag_idx);
+        }
+        X(row, t) = value;
       }
-      X(row, t) = value;
     }
+    Mat X_pred = X.rightCols(horizon + 1);
+    Mat Y_pred = F * X_pred;
+    Y = Y_pred.rightCols(horizon);
   }
-  Mat X_pred = X.rightCols(horizon + 1);
-  Mat Y_pred = F * X_pred;
-  Y = Y_pred.rightCols(horizon);
 }
 
 void Factorize(const Mat& Y, const Arr& Omega, const std::set<int>& lags_set, int rank, double lambda_f, double lambda_w, double lambda_x, double eta,
