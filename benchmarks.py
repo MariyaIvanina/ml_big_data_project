@@ -20,7 +20,7 @@ def _parse_args():
     parser.add_argument('--end_date', help="End date for training in format 'dd.mm.yyyy'")
     parser.add_argument('--columns', default='O,C,H,L', help="List of columns to fetch, separated by ','")
 
-    # TFMF params
+    # TRMF params
     # parser.add_argument('--rank', default=32, help="Factorization rank")
     # parser.add_argument('--lambda_x', default=1000, help="Regularization coefficient for inconsistent with"
     #                                                      " autoregression model rows in X matrix")
@@ -41,8 +41,9 @@ def apply_benchmark_model(data_interpolated, model_name):
             model = model_name(lags=lags)
             scores_nd = utilities.RollingCV(model, data_interpolated, T - h, h, T_step=1, metric='ND')
             scores_nrmse = utilities.RollingCV(model, data_interpolated, T - h, h, T_step=1, metric='NRMSE')
-            print('Independent AR performance ND/NRMSE (h = {}, lags = {}): {}/{}'.format(h, lags, round(
-                np.array(scores_nd).mean(), 3), round(np.array(scores_nrmse).mean(), 3)))
+            print('{} performance ND/NRMSE (h = {}, lags = {}): {}/{}'
+                  .format(model_name, h, lags,
+                          round(np.array(scores_nd).mean(), 3), round(np.array(scores_nrmse).mean(), 3)))
             temp.append((round(np.array(scores_nd).mean(), 3), round(np.array(scores_nrmse).mean(), 3)))
         errors_ind_ar.append(temp)
 

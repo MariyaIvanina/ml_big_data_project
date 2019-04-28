@@ -95,11 +95,11 @@ def RollingCV(model, data, T_train, T_test, T_step, metric='ND', normalize=True)
             train, test = get_slice(data, T_train, T_test, T_start, normalize=False)
 
             input_file = 'rolling_cv_input.csv'
-            outputfile = 'rolling_cv_output.csv'
+            output_file = 'rolling_cv_output.csv'
             pd.DataFrame(data).to_csv(input_file, na_rep='n', header=False, index=False)
 
-            model.fit(input_file, horizon=T_test, output_file=outputfile)
-            test_preds = pd.read_csv(outputfile, sep=',', header=None).values
+            model.fit(input_file, horizon=T_test, output_file=output_file)
+            test_preds = pd.read_csv(output_file, sep=',', header=None).values
         else:
             train, test = get_slice(data, T_train, T_test, T_start, normalize=normalize)
             model.fit(train)
