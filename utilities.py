@@ -1,4 +1,8 @@
 import numpy as np
+import pandas as pd
+
+from models import TRMF
+
 
 def ND(prediction, Y, mask=None):
     if mask is None:
@@ -83,9 +87,20 @@ def get_slice(data, T_train, T_test, T_start, normalize=True):
 def RollingCV(model, data, T_train, T_test, T_step, metric='ND', normalize=True):
     scores = np.array([])
     for T_start in range(0, data.shape[1]-T_train-T_test+1, T_step):
-        train, test = get_slice(data, T_train, T_test, T_start, normalize=normalize)
-        model.fit(train)
-        test_preds = model.predict(T_test)
+        if isinstance(model, TRMF):
+            train, test = get_slice(data, T_train, T_test, T_start, normalize=False)
+
+            input_file = 'rolling_cv_input.csv'
+            outputfile = 'rolling_cv_output.csv'
+            pd.DataFrame(data).to_csv(input_file, na_rep='n', header=False, index=False)
+
+            model.fit(input_file, horizon=T_test, output_file=outputfile)
+            test_preds = pd.read_csv(outputfile, sep=',', header=None).values
+        else:
+            train, test = get_slice(data, T_train, T_test, T_start, normalize=normalize)
+            model.fit(train)
+            test_preds = model.predict(T_test)
+
         if metric == 'ND':
             scores = np.append(scores, ND(test_preds, test))
         if metric == 'NRMSE':

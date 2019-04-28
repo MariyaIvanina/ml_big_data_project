@@ -42,6 +42,7 @@ def _main(args):
     model = TRMF(args.rank, args.lags.split(','), args.lambda_x, args.lambda_w, args.lambda_f, args.eta)
     model.fit(input_data_name + '_values.csv', horizon=args.horizon, output_file=args.output_file,
               output_f_file=args.output_f_file)
+    print("Finished!")
 
 
 if __name__ == '__main__':
