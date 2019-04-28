@@ -13,6 +13,7 @@ def _parse_args():
     parser.add_argument('--begin_date', help="Begin date for training in format 'dd.mm.yyyy'")
     parser.add_argument('--end_date', help="End date for training in format 'dd.mm.yyyy'")
     parser.add_argument('--output_file', default='predicted_values.csv', help="File path for predictions")
+    parser.add_argument('--output_f_file', default='F.csv', help="File path for F matrix")
     parser.add_argument('--horizon', default=0, help="Days amount to predict")
     parser.add_argument('--columns', default='O,C,H,L', help="List of columns to fetch, separated by ','")
     parser.add_argument('--rank', default=32, help="Factorization rank")
@@ -35,11 +36,12 @@ def _main(args):
     save_aggregated(currency_names, currency_values_df, input_data_name)
 
     print("Compiling library sources ...")
-    TRMF.compile_sources()
+    #TRMF.compile_sources()
 
     print("Running TRMF ...")
     model = TRMF(args.rank, args.lags.split(','), args.lambda_x, args.lambda_w, args.lambda_f, args.eta)
-    model.fit(input_data_name + '_values.csv', horizon=args.horizon, output_file=args.output_file)
+    model.fit(input_data_name + '_values.csv', horizon=args.horizon, output_file=args.output_file,
+              output_f_file=args.output_f_file)
 
 
 if __name__ == '__main__':

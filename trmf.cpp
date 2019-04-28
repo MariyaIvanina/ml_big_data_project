@@ -39,7 +39,7 @@ void Forecast(Mat& Y, const Arr& Omega, const std::set<int>& lags_set, int rank,
 void FindLambdas(const char* input_file_name, const char separator);
 void MatchByColumn(const Vec& ref, Mat &Y, int col);
 
-bool parse_config(int argc, char* argv[], char** input_file_name, char** output_file_name, char* delimeter, int* rank, int* horizon, int* T,
+bool parse_config(int argc, char* argv[], char** input_file_name, char** output_file_name, char** output_f_file_name, char* delimeter, int* rank, int* horizon, int* T,
   std::set<int>* lags_set, double* lambda_x, double* lambda_w, double* lambda_f, double* eta) {
   if (argc < 2)
     return false;
@@ -56,6 +56,11 @@ bool parse_config(int argc, char* argv[], char** input_file_name, char** output_
       strcpy(*output_file_name, argv[++idx]);
       idx++;
     }
+	else if (!strcmp("--output_f_file", argv[idx]))
+	{
+		strcpy(*output_f_file_name, argv[++idx]);
+		idx++;
+	}
     else if (!strcmp("--separator", argv[idx]))
     {
       *delimeter = argv[++idx][0];
@@ -166,13 +171,15 @@ int main(int argc, char* argv[])
   //char* input_file_name = "converted.csv";
   char* output_file_name = new char[256];
   //char* output_file_name = "test.txt";
+  char* output_f_file_name = new char[256];
+  output_f_file_name = "F.csv";
 
   char delimeter = ',';
   int rank = 32, horizon = 25, T = -1;
   double lambda_x = 10000, lambda_w = 1000, lambda_f = 0.01, eta = 0.001;
   std::set<int> lags_set = { 1, 2, 3, 4, 5, 6, 7, 14, 21 };
 
-  if (!parse_config(argc, argv, &input_file_name, &output_file_name, &delimeter, &rank, &horizon, &T,
+  if (!parse_config(argc, argv, &input_file_name, &output_file_name, &output_f_file_name, &delimeter, &rank, &horizon, &T,
     &lags_set, &lambda_x, &lambda_w, &lambda_f, &eta))
   {
     std::cout << "Error during parsing config file!\n";
@@ -209,7 +216,7 @@ int main(int argc, char* argv[])
     output_file.close();
   }
 
-  std::ofstream F_out_file("F.csv");
+  std::ofstream F_out_file(output_f_file_name);
   F_out_file << F.format(CSVFormat);
   F_out_file.close();
   return 0;
