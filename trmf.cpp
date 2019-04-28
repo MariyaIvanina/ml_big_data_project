@@ -46,57 +46,57 @@ bool parse_config(int argc, char* argv[], char** input_file_name, char** output_
   char* lags = new char[256];
   int idx = 1;
   while (idx < argc) {
-    if (!strcmp("input_file", argv[idx]))
+    if (!strcmp("--input_file", argv[idx]))
     {
       strcpy(*input_file_name, argv[++idx]);
       idx++;
     }
-    else if (!strcmp("output_file", argv[idx]))
+    else if (!strcmp("--output_file", argv[idx]))
     {
       strcpy(*output_file_name, argv[++idx]);
       idx++;
     }
-    else if (!strcmp("separator", argv[idx]))
+    else if (!strcmp("--separator", argv[idx]))
     {
       *delimeter = argv[++idx][0];
       idx++;
     }
-    else if (!strcmp("k", argv[idx]))
+    else if (!strcmp("--k", argv[idx]))
     {
       *rank = atoi(argv[++idx]);
       idx++;
     }
-    else if (!strcmp("lags", argv[idx]))
+    else if (!strcmp("--lags", argv[idx]))
     {
       strcpy(lags, argv[++idx]);
       idx++;
     }
-    else if (!strcmp("horizon", argv[idx]))
+    else if (!strcmp("--horizon", argv[idx]))
     {
       *horizon = atoi(argv[++idx]);
       idx++;
     }
-    else if (!strcmp("T", argv[idx]))
+    else if (!strcmp("--T", argv[idx]))
     {
       *T = atoi(argv[++idx]);
       idx++;
     }
-    else if (!strcmp("lambda_x", argv[idx]))
+    else if (!strcmp("--lambda_x", argv[idx]))
     {
       *lambda_x = atof(argv[++idx]);
       idx++;
     }
-    else if (!strcmp("lambda_w", argv[idx]))
+    else if (!strcmp("--lambda_w", argv[idx]))
     {
       *lambda_w = atof(argv[++idx]);
       idx++;
     }
-    else if (!strcmp("lambda_f", argv[idx]))
+    else if (!strcmp("--lambda_f", argv[idx]))
     {
       *lambda_f = atof(argv[++idx]);
       idx++;
     }
-    else if (!strcmp("eta", argv[idx]))
+    else if (!strcmp("--eta", argv[idx]))
     {
       *eta = atof(argv[++idx]);
       idx++;
