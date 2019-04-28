@@ -17,9 +17,8 @@ out/
 .idea_modules/
 
 ### JupyterNotebook ###
-.ipynb_checkpoints.
+.ipynb_checkpoints/
 */.ipynb_checkpoints/*
 __pycache__/
 
-prototype/__pycache__/*
-prototype/.ipynb_checkpoints/*
+*/__pycache__/*
