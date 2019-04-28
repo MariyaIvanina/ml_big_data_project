@@ -32,7 +32,7 @@ class TRMF:
             horizon=20,
             output_file='predicted_values.csv'):
         """
-
+        Applies factorization and forecasts rate for aggregated values from 'input_file'.
         :param input_file: File with input values for TRMF algorithm. In fact it is Y matrix.
         :param forecast: Flag determining whether to make a prediction.
         :param horizon: Days amount to predict. Set to 0 if 'forecast' is False.
