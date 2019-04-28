@@ -170,7 +170,7 @@ int main(int argc, char* argv[])
   char delimeter = ',';
   int rank = 32, horizon = 25, T = -1;
   double lambda_x = 10000, lambda_w = 1000, lambda_f = 0.01, eta = 0.001;
-  std::set<int> lags_set = { 1, 2, 3, 4, 5, 6, 7 , 14, 21 };
+  std::set<int> lags_set = { 1, 2, 3, 4, 5, 6, 7, 14, 21 };
 
   if (!parse_config(argc, argv, &input_file_name, &output_file_name, &delimeter, &rank, &horizon, &T,
     &lags_set, &lambda_x, &lambda_w, &lambda_f, &eta))

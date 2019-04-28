@@ -35,12 +35,16 @@ def aggregate(data_dir, begin_date, end_date, columns):
     :return: List of time series names and dataframe with time series values.
             Each name corresponds to appropriate column in dataframe. Dataframe has dates as index.
     """
+    begin_date = datetime.datetime.strptime(begin_date, '%d.%m.%Y')
+    end_date = datetime.datetime.strptime(end_date, '%d.%m.%Y')
+
     time_series_names = []
     time_series_df = None
 
     folders = os.listdir(data_dir)
+    ignored_counter = 0
 
-    for i, folder in enumerate(folders):
+    for folder in folders:
         filepath = _get_filepath(data_dir, folder)
         currency = filepath.split('/')[-1].split('_')[0]
 
@@ -48,7 +52,8 @@ def aggregate(data_dir, begin_date, end_date, columns):
         data['T'] = data['T'].map(lambda string: datetime.datetime.strptime(string, '%Y-%m-%dT%H:%M:%S'))
 
         if data['T'].iloc[0] > begin_date or data['T'].iloc[-1] < end_date:
-            print("File {} doesn't contain all data for the period of interest".format(filepath))
+            # print(f"Ignoring '{currency}'' currency. It doesn't contain enough data for given date range.")
+            ignored_counter += 1
             continue
 
         data = data[(data['T'] >= begin_date) & (data['T'] <= end_date)]
@@ -61,9 +66,9 @@ def aggregate(data_dir, begin_date, end_date, columns):
 
         time_series_names.extend(series_names)
 
-        time_series_df = data if i == 0 else pd.merge(time_series_df, data,
-                                                      how='outer', left_index=True, right_index=True)
-
+        time_series_df = data if time_series_df is None else pd.merge(time_series_df, data,
+                                                                      how='outer', left_index=True, right_index=True)
+    print(f"Ignored currencies with not enough data for given date range: {ignored_counter}")
     return time_series_names, time_series_df
 
 
@@ -85,10 +90,7 @@ def save_aggregated(time_series_names, time_series_df, output_filename):
 
 
 def _main(args):
-    begin_date = datetime.datetime.strptime(args.begin_date, '%d.%m.%Y')
-    end_date = datetime.datetime.strptime(args.end_date, '%d.%m.%Y')
-
-    ts_names, ts_values_df = aggregate(args.data_dir, begin_date, end_date, args.columns.split(','))
+    ts_names, ts_values_df = aggregate(args.data_dir, args.begin_date, args.end_date, args.columns.split(','))
     save_aggregated(ts_names, ts_values_df, args.output_filename)
 
 
