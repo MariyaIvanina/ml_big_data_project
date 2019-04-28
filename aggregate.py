@@ -85,8 +85,8 @@ def save_aggregated(time_series_names, time_series_df, output_filename):
     ts_values_filename = output_filename + '_values.csv'
     time_series_df.T.to_csv(ts_values_filename, na_rep='n', header=False, index=False)
 
-    ts_dates_filename = output_filename + '_dates.csv'
-    time_series_df.index.to_series().to_csv(ts_dates_filename)
+    # ts_dates_filename = output_filename + '_dates.csv'
+    # time_series_df.index.to_series().to_csv(ts_dates_filename)
 
 
 def _main(args):
