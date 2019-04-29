@@ -36,7 +36,7 @@ def _main(args):
     print("Data aggregation ...")
     currency_names, currency_values_df = aggregate(args.data_dir, args.begin_date, args.end_date,
                                                    args.columns.split(','))
-    input_data_name = 'tmp_agg'
+    input_data_name = 'aggregated'
     save_aggregated(currency_names, currency_values_df, input_data_name)
 
     print("Compiling library sources ...")
