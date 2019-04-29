@@ -24,7 +24,7 @@ Optimisation is done step by step separately for `F`, `X` and `W`. For each of t
 
 ## Installing
 
-Clone the repository. 
+Clone the repository into your local directory. 
 
 ## Usage
 
