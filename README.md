@@ -8,7 +8,7 @@ Implementation was created using C++ programming language. Python was used for b
 
 The TRMF algorithm was developed to solve the problem of time series prediction. The TRFM algorithm should be beneficial at handling multiple time series at once. It also should scale better and allows to restore missing values.
 
-We have N time series of length T organized into matrix Y (NxT). TRMF algorithm finds decomposition Y ≃ FX, where F is (Nxk), X is (kxT) and k is low. To solve this problem the authors proposed to minimize the following expression:
+We have `N` time series of length `T` organized into matrix `Y` `(NxT)`. TRMF algorithm finds decomposition `Y ≃ FX`, where `F` is `(Nxk)`, `X` is `(kxT)` and `k` is low. To solve this problem the authors proposed to minimize the following expression:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cleft%20%5C%7C%20P_%5COmega%28Y-FX%29%20%5Cright%20%5C%7C%5E%7B2%7D%20&plus;%20%5Clambda%20_f%5Cleft%20%5C%7C%20F%20%5Cright%20%5C%7C%20&plus;%20%5Clambda%20_w%5Cleft%20%5C%7C%20W%20%5Cright%20%5C%7C&plus;%5Clambda%20_x%20%5Csum_%7Br%3D1%7D%5E%7Bk%7DT_%7BAR%7D%28X_k%29%5Crightarrow%20%5Cmathit%7Bmin%7D_%7BF%2CX%2CW%7D)
 
