@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
   char* output_f_file_name = new char[256];
 
   char delimeter = ',';
-  int rank = 32, horizon = 25, T = -1;
+  int rank = 32, horizon = 0, T = -1;
   double lambda_x = 10000, lambda_w = 1000, lambda_f = 0.01, eta = 0.001;
   std::set<int> lags_set = { 1, 2, 3, 4, 5, 6, 7, 14, 21 };
 
