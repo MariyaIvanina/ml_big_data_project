@@ -40,27 +40,27 @@ As you can see, both options share a big part of common parameters.
 
 Parameters specific to `forecast.py`:
 
-- `--data_dir data_dir` - Path to directory with cryptocurrency data.
-- `--begin_date beg_date` - Begin date for training in format `dd.mm.yyyy`.
-- `--end_date end_date` - End date for training in format `dd.mm.yyyy`.
-- `--columns col` - List of columns to fetch, separated by `,`.
+- `--data_dir` - Path to directory with cryptocurrency data.
+- `--begin_date` - Begin date for training in format `dd.mm.yyyy`.
+- `--end_date` - End date for training in format `dd.mm.yyyy`.
+- `--columns` - List of columns to fetch, separated by `,`.
 
 Parameters for both `forecast.py` and `trmf`:
 
-- `--output_file out` - File path to store predictions.
-- `--output_f_file out_f` - File path to store `F` matrix.
-- `--rank r` - Factorization rank. `32` by default.
-- `--horizon h` - Time ticks amount to predict. `0` by default.
-- `--lambda_x x` - Regularization coefficient for inconsistent with autoregression model rows in X matrix. `10000` by default.
-- `--lambda_w w` - Regularization coefficient for large autoregression coefficients in W matrix. `1000` by default.
-- `--lambda_f f` - Regularization coefficient for large values in F matrix. `0.01` by default.
-- `--eta e` - Regularization coefficient eta for X matrix. `0.001` by default.
-- `--lags lags_list` - List of lags to use in algorithm, separated by comma without whitespaces. `1,2,3,4,5,6,7,14,21` by default.
+- `--output_file` - File path to store predictions.
+- `--output_f_file` - File path to store `F` matrix.
+- `--rank` - Factorization rank. `32` by default.
+- `--horizon` - Time ticks amount to predict. `0` by default.
+- `--lambda_x` - Regularization coefficient for inconsistent with autoregression model rows in X matrix. `10000` by default.
+- `--lambda_w` - Regularization coefficient for large autoregression coefficients in W matrix. `1000` by default.
+- `--lambda_f` - Regularization coefficient for large values in F matrix. `0.01` by default.
+- `--eta` - Regularization coefficient eta for X matrix. `0.001` by default.
+- `--lags` - List of lags to use in algorithm, separated by comma without whitespaces. `1,2,3,4,5,6,7,14,21` by default.
 
 Parameters specific to `trmf`:
 
-- `--input_file in` - Location of the input file. (`forecast.py` sets this parameters internally).
-- `--separator s` - A character which separates values in the input file. `,` by default.
+- `--input_file` - Location of the input file. (`forecast.py` sets this parameters internally).
+- `--separator` - A character which separates values in the input file. `,` by default.
 
 The prediction is saved in CSV format. Each line corresponds to a single time series.
 
