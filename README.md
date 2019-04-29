@@ -32,7 +32,7 @@ We suggest using C++ TRMF implementation via python3 script `forecast.py` since 
 
 `forecast.py` usage: `./forecast.py --data_dir data_dir --begin_date beg_date --end_date end_date --columns col --output_file out --output_f_file out_f --rank r --horizon h --lambda_x x --lambda_w w --lambda_f f --eta e --lags lags_list`
 
-To build c++ implementation without using `forecast.py` use: `g++ -std=c++11 -O3 trmf.cpp -o trmf`
+To build c++ implementation without using `forecast.py` use: `g++ -std=c++11 -O3 trmf.cpp -o trmf` or run `make`.
 
 `trmf` usage: `./trmf --input_file in --separator s --output_file out --output_f_file out_f --rank r --horizon h --lambda_x x --lambda_w w --lambda_f f --eta e --lags lags_list`
 
