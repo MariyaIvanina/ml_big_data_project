@@ -68,4 +68,4 @@ We prepared a simple example with predefined parameters. It can be executed with
 
 ## Data example
 
-An archive with some data can be found [here](https://www.dropbox.com/s/981b9ervs8wve6d/history.tar.gz?dl=0.)
+An archive with some data can be found [here](https://www.dropbox.com/s/981b9ervs8wve6d/history.tar.gz?dl=0.).
