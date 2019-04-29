@@ -62,10 +62,16 @@ Parameters specific to `trmf`:
 - `--input_file` - Location of the input file. (`forecast.py` sets this parameters internally).
 - `--separator` - A character which separates values in the input file. `,` by default.
 
-The prediction is saved in CSV format. Each line corresponds to a single time series.
+The prediction is saved in CSV format. Each line corresponds to a single time series. `forecast.py` also transforms this file into more readable one where each column corresponds to a single feature of one of cryptocurrencies and each row corresponds to a certain timestamp.
 
 We prepared a simple example with predefined parameters. It can be executed with `run_example.sh`.
 
 ## Data example
 
 An archive with some data can be found [here](https://www.dropbox.com/s/981b9ervs8wve6d/history.tar.gz?dl=0.).
+
+## Experiments and comparison with other methods
+
+We tested our implementation on different time intervals and prediction lengths and compared with different versions of `Autoregressive models`. The results can be found in `Crypto_data_investigation.ipynb`
+
+We also analyzed `F` matrix trained on different time intervals and performed 2D clustering visualization using t-SNE algorithm. It can be found in `Vector_visualization.ipynb`.
