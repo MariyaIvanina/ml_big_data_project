@@ -49,7 +49,7 @@ class TRMF:
 
         lags_str = ','.join(str(x) for x in self.lags)
         call_str = f"./trmf --input_file {input_file} --output_file {output_file} --output_f_file {output_f_file}" \
-            f" --horizon {horizon} --k {self.rank} --lags {lags_str} --lambda_x {self.lambda_x}" \
+            f" --horizon {horizon} --rank {self.rank} --lags {lags_str} --lambda_x {self.lambda_x}" \
             f" --lambda_w {self.lambda_w} --lambda_f {self.lambda_f} --eta {self.eta}"
 
         subprocess.call(call_str.split())
