@@ -39,7 +39,7 @@ void Forecast(Mat& Y, const Arr& Omega, const std::set<int>& lags_set, int rank,
 void FindLambdas(const char* input_file_name, const char separator);
 void MatchByColumn(const Vec& ref, Mat &Y, int col);
 
-bool parse_config(int argc, char* argv[], char** input_file_name, char** output_file_name, char** output_f_file_name, char* delimeter, int* rank, int* horizon, int* T,
+bool parse_config(int argc, char* argv[], char** input_file_name, char** output_file_name, char** output_f_file_name, char* delimeter, int* rank, int* horizon,
   std::set<int>* lags_set, double* lambda_x, double* lambda_w, double* lambda_f, double* eta) {
   if (argc < 2)
     return false;
@@ -56,17 +56,17 @@ bool parse_config(int argc, char* argv[], char** input_file_name, char** output_
       strcpy(*output_file_name, argv[++idx]);
       idx++;
     }
-	else if (!strcmp("--output_f_file", argv[idx]))
-	{
-		strcpy(*output_f_file_name, argv[++idx]);
-		idx++;
-	}
+    else if (!strcmp("--output_f_file", argv[idx]))
+    {
+      strcpy(*output_f_file_name, argv[++idx]);
+      idx++;
+    }
     else if (!strcmp("--separator", argv[idx]))
     {
       *delimeter = argv[++idx][0];
       idx++;
     }
-    else if (!strcmp("--k", argv[idx]))
+    else if (!strcmp("--rank", argv[idx]))
     {
       *rank = atoi(argv[++idx]);
       idx++;
@@ -79,11 +79,6 @@ bool parse_config(int argc, char* argv[], char** input_file_name, char** output_
     else if (!strcmp("--horizon", argv[idx]))
     {
       *horizon = atoi(argv[++idx]);
-      idx++;
-    }
-    else if (!strcmp("--T", argv[idx]))
-    {
-      *T = atoi(argv[++idx]);
       idx++;
     }
     else if (!strcmp("--lambda_x", argv[idx]))
@@ -178,7 +173,7 @@ int main(int argc, char* argv[])
   double lambda_x = 10000, lambda_w = 1000, lambda_f = 0.01, eta = 0.001;
   std::set<int> lags_set = { 1, 2, 3, 4, 5, 6, 7, 14, 21 };
 
-  if (!parse_config(argc, argv, &input_file_name, &output_file_name, &output_f_file_name, &delimeter, &rank, &horizon, &T,
+  if (!parse_config(argc, argv, &input_file_name, &output_file_name, &output_f_file_name, &delimeter, &rank, &horizon,
     &lags_set, &lambda_x, &lambda_w, &lambda_f, &eta))
   {
     std::cout << "Error during parsing config file!\n";
