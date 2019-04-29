@@ -50,7 +50,7 @@ Parameters for both `forecast.py` and `trmf`:
 - `--output_file out` - File path to store predictions.
 - `--output_f_file out_f` - File path to store `F` matrix.
 - `--rank r` - Factorization rank. `32` by default.
-- `--horizon h` - Time ticks amount to predict. `25` by default.
+- `--horizon h` - Time ticks amount to predict. `0` by default.
 - `--lambda_x x` - Regularization coefficient for inconsistent with autoregression model rows in X matrix. `10000` by default.
 - `--lambda_w w` - Regularization coefficient for large autoregression coefficients in W matrix. `1000` by default.
 - `--lambda_f f` - Regularization coefficient for large values in F matrix. `0.01` by default.
