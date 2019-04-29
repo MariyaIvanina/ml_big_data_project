@@ -25,18 +25,18 @@ def _parse_args():
 
 def apply_benchmark_model(data, model_name):
     T = data.shape[1]
-    errors_ind_ar = []
-    for lags in [[1, 2, 3, 4, 5, 6, 7, 14, 21]]:
-        temp = []
+    average_timings= []
+    for lags in [[1, 7, 14, 30]]:
         for h in [1, 5, 10, 20]:
             model = model_name(lags=lags)
-            scores_nd = utilities.RollingCV(model, data, T - h, h, T_step=1, metric='ND')
-            scores_nrmse = utilities.RollingCV(model, data, T - h, h, T_step=1, metric='NRMSE')
+            scores_nd, average_time = utilities.RollingCV(model, data, T - h, h, T_step=1, metric='ND')
+            scores_nrmse, average_time = utilities.RollingCV(model, data, T - h, h, T_step=1, metric='NRMSE')
             print('{} performance ND/NRMSE (h = {}, lags = {}): {}/{}'
                   .format(model_name, h, lags,
                           round(np.array(scores_nd).mean(), 3), round(np.array(scores_nrmse).mean(), 3)))
-            temp.append((round(np.array(scores_nd).mean(), 3), round(np.array(scores_nrmse).mean(), 3)))
-        errors_ind_ar.append(temp)
+            if h == 1:
+                average_timings.append(average_time)
+    print("Average time performance for {}: {}s".format(model_name, sum(average_timings)/len(average_timings)))
 
 
 def _main(args):

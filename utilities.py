@@ -1,7 +1,9 @@
+#!/usr/bin/env python3
 import numpy as np
 import pandas as pd
 
 from models import TRMF
+from time import time
 
 
 def ND(prediction, Y, mask=None):
@@ -98,7 +100,9 @@ def fit_predict_trmf(model, train, horizon):
 
 def RollingCV(model, data, T_train, T_test, T_step, metric='ND', normalize=True):
     scores = np.array([])
+    run_timings = []
     for T_start in range(0, data.shape[1]-T_train-T_test+1, T_step):
+        start = time()
         if isinstance(model, TRMF):
             train, test = get_slice(data, T_train, T_test, T_start, normalize=False)
             test_preds = fit_predict_trmf(model, train, T_test)
@@ -106,9 +110,10 @@ def RollingCV(model, data, T_train, T_test, T_step, metric='ND', normalize=True)
             train, test = get_slice(data, T_train, T_test, T_start, normalize=normalize)
             model.fit(train)
             test_preds = model.predict(T_test)
+        run_timings.append(time()-start)
 
         if metric == 'ND':
             scores = np.append(scores, ND(test_preds, test))
         if metric == 'NRMSE':
             scores = np.append(scores, NRMSE(test_preds, test))
-    return scores
+    return scores, sum(run_timings)/len(run_timings)
